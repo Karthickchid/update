@@ -1,0 +1,420 @@
+                                                          PACKAGES
+
+1). PACKAGE CREATION:
+create or replace package emp_pack as
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+OUTPUT:
+Package created.
+----------------------------------------------------------------
+PACKAGE BODY:
+
+create or replace package body emp_pack as
+
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+end;
+
+OUTPUT:
+Package body created.
+-------------------------------------------------------------
+PROCEDURE EXECUTION:
+
+execute emp_pack.getempinfo(7788);
+
+OUTPUT:
+from getempinfo proc ename = SCOTT
+
+PL/SQL procedure successfully completed.
+-------------------------------------------------------------
+FUNCTION EXECUTION:
+
+declare 
+v_forsal emp.sal%type;
+begin
+v_forsal:=emp_pack.getsal(7788);
+dbms_output.put_line('sal from caller= '|| v_forsal);
+end;
+/
+OUTPUT:
+from getsal function sal = 12000
+sal from caller= 12000
+
+PL/SQL procedure successfully completed.
+**************************************************************
+2)
+create or replace package emp_pack as
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+
+OUTPUT:
+Package created.
+
+------------------------------------------------------------------
+create or replace package body emp_pack as
+procedure pri_proc as
+begin
+dbms_output.put_line('in private proc pri_proc');
+end;
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+pri_proc;
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+end;
+/
+OUTPUT:
+Package body created.
+--------------------------------------------------
+execute emp_pack.getempinfo(7788);
+
+OUTPUT:
+in private proc pri_proc
+from getempinfo proc ename = SCOTT
+
+PL/SQL procedure successfully completed.
+*****************************************************************
+
+3)create or replace package emp_pack as
+g_var number:=100;
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+OUTPUT:
+Package created.
+------------------------------------------------------
+create or replace package body emp_pack as
+procedure pri_proc as
+begin
+dbms_output.put_line('in private proc pri_proc');
+end;
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+pri_proc;
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+end;
+/
+OUTPUT:
+Package body created.
+------------------------------------------------------------
+begin
+dbms_output.put_line(' val =  '|| emp_pack.g_var);
+end;
+/
+OUTPUT:
+val =  100
+
+PL/SQL procedure successfully completed.
+ 
+******************************************************
+4)create or replace package emp_pack as
+g_var number:=100;
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+
+OUTPUT
+Package created.
+------------------------------------------------
+
+create or replace package body emp_pack as
+pri_var number:=122;
+procedure pri_proc as
+begin
+dbms_output.put_line('in private proc pri_proc');
+end;
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+pri_proc;
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+end;
+/
+OUTPUT:
+Package body created.
+-------------------------------------------------------------
+begin
+dbms_output.put_line(' val =  '|| emp_pack.pri_var);
+end;
+/
+
+OUTPUT:
+ERROR at line 2:
+ORA-06550: line 2, column 44:
+PLS-00302: component 'PRI_VAR' must be declared
+ORA-06550: line 2, column 1:
+PL/SQL: Statement ignored
+
+**************************************************************
+
+5)
+create or replace package emp_pack as
+g_var number:=100;
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+ OUTPUT:
+Package created.
+-------------------------------
+create or replace package body emp_pack as
+pri_var number:=122;
+procedure pri_proc as
+begin
+dbms_output.put_line('in private proc pri_proc');
+end;
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+pri_proc;
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+begin
+dbms_output.put_line('initialization');
+end;
+/
+
+OUTPUT:
+Package body created.
+-------------------------------------------------
+A)begin
+dbms_output.put_line(' val =  '|| emp_pack.g_var);
+end;
+/
+
+OUTPUT:
+initialization
+val =  100
+
+
+B)begin
+dbms_output.put_line(' val =  '|| emp_pack.g_var);
+end;
+/
+OUTPUT:
+val =  100
+
+PL/SQL procedure successfully completed.
+*****************************************************************
+6)
+create or replace package emp_pack as
+g_var number;
+procedure getempinfo(p_empno emp.empno%type);
+function getsal(p_empno emp.empno%type) return number;
+end;
+/
+OUTPUT:
+Package created.
+---------------------------------------------------------------------
+create or replace package body emp_pack as
+pri_var number:=122;
+procedure pri_proc as
+begin
+dbms_output.put_line('in private proc pri_proc');
+end;
+procedure getempinfo(p_empno emp.empno%type) as
+v_name emp.ename%type;
+begin
+pri_proc;
+select ename into v_name from emp where empno=p_empno;
+dbms_output.put_line('from getempinfo proc ename = ' || v_name);
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+function getsal(p_empno emp.empno%type) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line('from getsal function sal = ' || v_sal);
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('invalid empno');
+end;
+begin
+dbms_output.put_line('initialization');
+g_var:=1;
+end;
+/
+
+OUTPUT:
+Package body created.
+-------------------------------------------------------------------
+begin
+dbms_output.put_line(' val =  '|| emp_pack.g_var);
+end;
+/
+OUTPUT:
+initialization
+val =  1
+
+PL/SQL procedure successfully completed.
+
+begin
+dbms_output.put_line(' val =  '|| emp_pack.g_var);
+end;
+/
+val =  1
+
+PL/SQL procedure successfully completed.
+*******************************************************************
+FUNCTION OVERLOADING
+
+create or replace package operations as
+function add(var1 number,var2 number) return number;
+function add(var1 number,var2 number,var3 number) return number;
+end;
+
+OUTPUT:
+Package created.
+----------------------------------------------------------------------
+create or replace package body operations as
+function add(var1 number,var2 number) return number as
+result number;
+begin
+result:=var1+var2;
+dbms_output.put_line( 'add with 2 para result = ' || result );
+return result;
+end;
+function add(var1 number,var2 number,var3 number) return number as
+result number;
+begin
+result:=var1+var2+var3;
+dbms_output.put_line( 'add with 3 para result = ' || result );
+return result;
+end;
+end;
+/
+
+OUTPUT:
+Package body created
+------------------------------------------------------------------------
+declare
+res number;
+begin
+res:= operations.add(10,20);
+dbms_output.put_line(' add of 2 = ' || res);
+res:= operations.add(100,200,300);
+dbms_output.put_line(' add of 3 = ' || res);
+end;
+/
+
+OUTPUT:
+add with 2 para result = 30
+add of 2 = 30
+add with 2 para result = 600
+add of 3 = 600
+
+PL/SQL procedure successfully completed.
+****************************************************************
+META DATA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

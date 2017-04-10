@@ -1,0 +1,248 @@
+ 1)declare
+ depno number:=&num;
+ cursor c_emp(depno number) is select ename, sal*(110/100) inc_sal from emp where deptno= depno;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp(depno);
+ dbms_output.put_line('emp from depno');
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line(' ename = ' || v_emp.ename || ' sal = ' || v_emp.inc_sal || ' rowcount = ' || c_emp%rowcount);
+ end loop;
+ end;
+ /
+OUTPUT----
+Enter value for num: 10
+old   2:  depno number:=&num;
+new   2:  depno number:=10;
+emp from depno
+ename = KING sal = 5500 rowcount = 1
+ename = CLARK sal = 2695 rowcount = 2
+ename = MILLER sal = 1430 rowcount = 3
+
+
+
+2.3)declare
+ cursor c_emp is select  * from emp;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp;
+ for v_counter in 1..5
+ loop 
+ fetch c_emp into  v_emp;
+ dbms_output.put_line(' ename = ' || v_emp.ename || ' sal = ' || v_emp.sal || ' job = ' || v_emp.job);
+ end loop;
+ close c_emp;
+ end;
+ /
+OUTPUT
+ename = KING sal = 13182 job = PRESIDENT
+ename = BLAKE sal = 3793.35 job = MANAGER
+ename = CLARK sal = 7579.65 job = MANAGER
+ename = JONES sal = 5140.8 job = MANAGER
+ename = MARTIN sal = 1663.75 job = SALESMAN
+
+PL/SQL procedure successfully completed.
+
+
+3)
+declare
+cursor c_emp is select  ename,sal,job from emp where job='MANAGER';
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp;
+for v_counter in 1..3
+ loop 
+fetch c_emp into  v_emp;
+ dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'job=' || v_emp.job|| 'rowcount='|| c_emp%rowcount);
+ end loop;
+ close c_emp;
+ end ;
+
+OUTPUT---
+ename=BLAKEsal=3793.35job=MANAGERrowcount=1
+ename=CLARKsal=7579.65job=MANAGERrowcount=2
+ename=JONESsal=5140.8job=MANAGERrowcount=3
+
+PL/SQL procedure successfully completed.
+
+
+4)declare
+p_job varchar2(10) := '&eno';
+ cursor c_emp(p_job varchar2) is select  * from emp where job=p_job;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp(p_job);
+ dbms_output.put_line('emp from job');
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line(' ename = ' || v_emp.ename || ' sal = ' ||v_emp.sal|| ' job = ' || v_emp.job  ||  ' rowcount = '|| c_emp%rowcount);
+ end loop;
+ if c_emp%isopen then
+ dbms_output.put_line('closing cursor');
+ close c_emp;
+ end if;
+end;
+/
+
+OUTPUT:
+
+Enter value for eno: CLERK
+old   2: p_job varchar2(10) := '&eno';
+new   2: p_job varchar2(10) := 'CLERK';
+emp from job
+ename = JAMES sal = 1264.45 job = CLERK rowcount = 1
+ename = SMITH sal = 1382.4 job = CLERK rowcount = 2
+ename = ADAMS sal = 1900.8 job = CLERK rowcount = 3
+ename = MILLER sal = 5053.1 job = CLERK rowcount = 4
+closing cursor
+
+PL/SQL procedure successfully completed.
+
+*************************************************
+SQL> select empno,sal from emp;
+
+     EMPNO        SAL
+---------- ----------
+      7839       5000
+      7698       2850
+      7782       2450
+      7566       2975
+      7654       1250
+      7499       1600
+      7844       1500
+      7900        950
+      7521       1250
+      7902       3000
+      7369        800
+
+     EMPNO        SAL
+---------- ----------
+      7788      12000
+      7876       1100
+      7934       1300
+
+14 rows selected.
+
+create trigger tr_update_sal after update on emp
+  begin
+  dbms_output.put_line('sal is triggered ');
+  end;
+  /
+
+Trigger created.
+
+SQL> update emp set sal=sal+1000 ;
+sal is triggered
+
+14 rows updated.
+
+SQL> 
+
+-------------------------------SQL> update emp set sal=sal+1000 where empno=7839;
+sal is triggered
+
+1 row updated.
+
+SQL> select sal,empno from emp;
+
+       SAL      EMPNO
+---------- ----------
+      7000       7839
+      3850       7698
+      3450       7782
+      3975       7566
+      2250       7654
+      2600       7499
+      2500       7844
+      1950       7900
+      2250       7521
+      4000       7902
+      1800       7369
+
+       SAL      EMPNO
+---------- ----------
+     13000       7788
+      2100       7876
+      2300       7934
+
+14 rows selected.
+
+-----------------------------------------------------
+statement level triggers --- executed once per statement
+for multiple rows ---- use (for each row)
+
+
+create trigger t_update_sal after update on emp
+for each row
+  begin
+  dbms_output.put_line('sal is triggered ');
+  end;
+  /
+
+update emp set sal=sal+1000 ;
+
+-----------------------------------------------------
+create trigger t_updae_sal after update or insert or delete on emp 
+for each row
+  begin
+  dbms_output.put_line('sal is triggered ');
+  end;
+  /
+-----------------------------------------
+
+create trigger t_updates_sal after update or insert or delete on emp 
+for each row
+  begin
+if inserting then
+  dbms_output.put_line(' inserting ');
+elsif updating then
+dbms_output.put_line(' updating row ');
+elsif deleting then
+dbms_output.put_line(' deleting row ');
+end if;
+  end;
+  /
+
+
+------------------------
+create or replace trigger tr_update_sal after update
+on emp
+for each row
+
+insert into sal_details values(:old.empno,:new.sal);
+dbms_output.put_line('added in sal details');
+end;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     

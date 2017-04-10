@@ -1,0 +1,356 @@
+1)create or replace type MARKS_TYPE as object 
+(Subject varchar2(25),midTermMarks number(3), annualmarks number(3));
+/
+OUTPUT:
+Type created.
+
+create table MYMARKS(name varchar2(25), marks MARKS_TYPE);
+OUTPUT:
+Table created
+
+insert into MYMARKS values( ' vishwa ' , MARKS_TYPE( ' sql ' ,80,85));
+insert into MYMARKS values( ' ashok ' , MARKS_TYPE( ' plsql ' ,70,75));
+insert into MYMARKS values( ' jeeva ' , MARKS_TYPE( ' java ' ,70,95));
+
+OUTPUT:
+1 row created.
+1 row created.
+1 row created.
+
+select * from MYMARKS;
+OUTPUT:
+NAME
+-------------------------
+MARKS(SUBJECT, MIDTERMMARKS, ANNUALMARKS)
+--------------------------------------------------------------------------------
+ vishwa
+MARKS_TYPE(' sql ', 80, 85)
+
+ ashok
+MARKS_TYPE(' plsql ', 70, 75)
+
+ jeeva
+MARKS_TYPE(' java ', 70, 95)
+
+select m.marks.subject from MYMARKS m where name=' ashok ';
+OUTPUT:
+ MARKS.SUBJECT
+-------------------------
+ plsql
+
+*****************************************************************
+2)create table students (studentName varchar2(25), rollno number(3) primary key, score MARKS_TYPE);
+OUTPUT:
+Table created
+
+insert into students values( ' vinodh ',25  , MARKS_TYPE( 'J2E' ,93,95));
+insert into students values( ' ajay ' ,27 ,MARKS_TYPE( 'ANGULAR JS' ,96,92));
+insert into students values( ' ruhid ' ,36 ,MARKS_TYPE( 'HTML' ,97,80));
+OUTPUT:
+1 row created.
+1 row created.
+1 row created.
+
+select s.score.midTermMarks , s.score.annualmarks from students s where rollno=27;
+OUTPUT:
+SCORE.MIDTERMMARKS SCORE.ANNUALMARKS
+------------------ -----------------
+                96                92
+
+select  s.score.annualmarks+5 from students s where rollno=36;
+OUTPUT:
+
+S.SCORE.ANNUALMARKS+5
+---------------------
+                   85
+
+*************************************************************************************
+3)
+create or replace type ICECREAM_TYPE as object
+(flovorNo number(2), fname varchar(10), cost number(3), Hastopping varchar(1));
+/
+OUTPUT:
+Type created.
+
+create table menu( menuno number(2) primary key , maincourse varchar(15) not null , desert ICECREAM_TYPE , Colddrink varchar(6));
+OUTPUT:
+Table created
+
+
+insert into menu values( 12, ' BIRIYANI ' ,ICECREAM_TYPE( 20 , ' VANILLA ', 50, 'Y'), ' COKE ');
+insert into menu values( 13, ' NOODLES ' ,ICECREAM_TYPE( 30 , ' BADAM ', 60, 'N'), ' PEPSI' );
+insert into menu values( 14, 'FRIEDRICE' ,ICECREAM_TYPE( 40 , 'CHOCOLATE', 50, 'Y'), 'LIMCA');
+insert into menu values( 15, ' PAROTA ' ,ICECREAM_TYPE( 50 , ' PISTA ', 50, 'N'), ' FANTA' );
+insert into menu values( 16, 'CHAPATHI' ,ICECREAM_TYPE( 60 , 'MIXING', 50, 'Y'),' LASSI');
+
+OUTPUT:
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+1 row created.
+
+select * from menu;
+
+OUTPUT:
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+        12  BIRIYANI
+ICECREAM_TYPE(20, ' VANILLA ', 50, 'Y')
+ COKE
+
+        13  NOODLES
+ICECREAM_TYPE(30, ' BADAM ', 60, 'N')
+ PEPSI
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+
+        14 FRIEDRICE
+ICECREAM_TYPE(40, 'CHOCOLATE', 50, 'Y')
+LIMCA
+
+        15  PAROTA
+ICECREAM_TYPE(50, ' PISTA ', 50, 'N')
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+ FANTA
+
+        16 CHAPATHI
+ICECREAM_TYPE(60, 'MIXING', 50, 'Y')
+ LASSI
+
+
+select i.desert.cost , i.desert.fname from menu i where i.desert.flovorno=20;
+
+OUTPUT:
+DESERT.COST DESERT.FNA
+----------- ----------
+         50  VANILLA
+
+update menu i set i.desert.cost=i.desert.cost+20, maincourse='fish' where menuno=12;
+
+OUTPUT:
+1 row updated.
+select * from menu;
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+        12 fish
+ICECREAM_TYPE(20, ' VANILLA ', 90, 'Y')
+ COKE
+
+        13  NOODLES
+ICECREAM_TYPE(30, ' BADAM ', 60, 'N')
+ PEPSI
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+
+        14 FRIEDRICE
+ICECREAM_TYPE(40, 'CHOCOLATE', 50, 'Y')
+LIMCA
+
+        15  PAROTA
+ICECREAM_TYPE(50, ' PISTA ', 50, 'N')
+
+    MENUNO MAINCOURSE
+---------- ---------------
+DESERT(FLOVORNO, FNAME, COST, HASTOPPING)
+--------------------------------------------------------------------------------
+COLDDR
+------
+ FANTA
+
+        16 CHAPATHI
+ICECREAM_TYPE(60, 'MIXING', 50, 'Y')
+ LASSI
+**************************************************************************
+TO ADD VALUES 
+create or replace procedure formodify(p_empid number, p_phone in out phone_no1) as
+var number;
+begin
+var:=p_phone.count;
+p_phone.extend(1);
+p_phone(var+1):=abc1('demo','demoPL');
+update emp_v1 set phone where empid=p_empid;
+dbms_output.put_line('done');
+end;
+
+
+
+declare 
+t_phone phone_no1;
+begin
+select phone into t_phone from emp_v1 where empid=1;
+formodify(1,t_phone);
+end;
+
+***************************************************************
+
+NESTED 
+
+create type vehicle as object(vid number, vname varchar2(20));
+/
+
+create type vehicle_tab as table of vehicle;
+/
+
+
+create table person_id(pid number, pname varchar2(20), vehicle_details vehicle_tab)
+nested table vehicle_details store as vehicle_details_tab;
+
+insert into person_id values(1, ' ariv ' , vehicle_tab(vehicle(1, ' ferrari '), vehicle (2, ' BMW ')))
+
+OUTPUT:
+SQL> select * from person_id;
+
+       PID PNAME
+---------- --------------------
+VEHICLE_DETAILS(VID, VNAME)
+--------------------------------------------------------------------------------
+         1  ariv
+VEHICLE_TAB(VEHICLE(1, ' ferrari '), VEHICLE(2, ' BMW '))
+
+FOR UPDATING:
+
+declare
+new_vehicle vehicle_tab;
+begin
+new_vehicle:=vehicle_tab(vehicle(1,'ROYAL ENFIELD'), vehicle(2,' DUCATI '));
+update person_id set vehicle_details=new_vehicle where pid=1;
+dbms_output.put_line('updated');
+end;
+/
+
+OUTPUT:
+
+updated
+PL/SQL procedure successfully completed.
+
+SQL> select * from person_id;
+
+       PID PNAME
+---------- --------------------
+VEHICLE_DETAILS(VID, VNAME)
+--------------------------------------------------------------------------------
+         1  ariv
+VEHICLE_TAB(VEHICLE(1, 'ROYAL ENFIELD'), VEHICLE(2, ' DUCATI '))
+
+**************************************************************************************
+
+insert into person_id values(2, ' VINAY ' , vehicle_tab(vehicle(1, ' ALTO '), vehicle (2, ' PUNTO ')))
+
+
+declare
+l_name person_id.pname%type;
+l_vehicle person_id.vehicle_details%type;
+cursor get_data is select pname,vehicle_details from person_id;
+begin
+open get_data;
+loop
+fetch get_data into l_name,l_vehicle;
+exit when get_data%notfound;
+dbms_output.put_line('person name = ' || l_name || 'and vehicles are ');
+for x in 1..l_vehicle.count
+loop
+dbms_output.put_line(l_vehicle(x).vname);
+end loop;
+end loop;
+end;
+/
+OUTPUT:
+person name =  ariv and vehicles are
+ROYAL ENFIELD
+DUCATI
+person name =  VINAY and vehicles are
+ALTO
+
+PUNTO
+
+PL/SQL procedure successfully completed.
+
+*****************************************************
+
+update the (select vehicle_details from person_id where pid=2) set vname=' yamaha ' where vid=1;
+
+OUTPUT:
+
+SQL> select * from person_id where pid=2;
+
+       PID PNAME
+---------- --------------------
+VEHICLE_DETAILS(VID, VNAME)
+--------------------------------------------------------------------------------
+         2  VINAY
+VEHICLE_TAB(VEHICLE(1, ' yamaha '), VEHICLE(2, '
+PUNTO '))
+
+*************************************************************
+
+insert into the (select vehicle_details from person_id where pid=2) values (3, ' BAJAJ ');
+
+OUTPUT:
+1 row created.
+
+SQL> select * from person_id where pid=2;
+
+       PID PNAME
+---------- --------------------
+VEHICLE_DETAILS(VID, VNAME)
+--------------------------------------------------------------------------------
+         2  VINAY
+VEHICLE_TAB(VEHICLE(1, ' yamaha '), VEHICLE(2, '
+PUNTO '), VEHICLE(3, ' BAJAJ '))
+
+**************************************************************************
+delete from the (select vehicle_details from person_id where pid=2) where vid=1;
+
+OUTPUT:
+
+SQL> select * from person_id where pid=2;
+
+       PID PNAME
+---------- --------------------
+VEHICLE_DETAILS(VID, VNAME)
+--------------------------------------------------------------------------------
+         2  VINAY
+VEHICLE_TAB(VEHICLE(2, '
+PUNTO '), VEHICLE(3, ' BAJAJ '))
+
+****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+

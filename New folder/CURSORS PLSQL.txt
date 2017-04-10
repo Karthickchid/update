@@ -1,0 +1,322 @@
+DAY--2
+
+to work with multiple rows cursor is used
+CURSOR DECLARE
+set serveroutput on
+ declare
+ cursor c_emp is select  * from emp;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp;
+ for v_counter in 1..10
+ loop 
+ fetch c_emp into  v_emp;
+ dbms_output.put_line(' ename = ' || v_emp.ename || ' sal = ' || v_emp.sal);
+ end loop;
+ close c_emp;
+ end;
+ /
+ename=KINGsal=5000
+ename=BLAKEsal=2850
+ename=CLARKsal=2450
+ename=JONESsal=2975
+ename=MARTINsal=1250
+ename=ALLENsal=1600
+ename=TURNERsal=1500
+ename=JAMESsal=950
+ename=WARDsal=1250
+ename=FORDsal=3000
+
+PL/SQL procedure successfully completed.
+
+---------------------------------------------------------------------------------------------------------------------
+CURSOR ATTRIBUTE - NOTFOUND 
+declare
+cursor c_emp is select  * from emp;
+v_emp c_emp%rowtype;
+begin
+open c_emp;
+loop 
+fetch c_emp into  v_emp;
+exit when c_emp%notfound;
+dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+end loop;
+close c_emp;
+end;
+/
+
+OUTPUT
+ename=KINGsal=5000rowcount=1
+ename=BLAKEsal=2850rowcount=2
+ename=CLARKsal=2450rowcount=3
+ename=JONESsal=2975rowcount=4
+ename=MARTINsal=1250rowcount=5
+ename=ALLENsal=1600rowcount=6
+ename=TURNERsal=1500rowcount=7
+ename=JAMESsal=950rowcount=8
+ename=WARDsal=1250rowcount=9
+ename=FORDsal=3000rowcount=10
+ename=SMITHsal=800rowcount=11
+ename=SCOTTsal=3000rowcount=12
+ename=ADAMSsal=1100rowcount=13
+ename=MILLERsal=1300rowcount=14
+
+PL/SQL procedure successfully completed.
+--------------------------------------------------------------------------------------------------
+CLOSING CURSOR  
+declare
+cursor c_emp is select  * from emp;
+v_emp c_emp%rowtype;
+begin
+open c_emp;
+loop 
+fetch c_emp into  v_emp;
+exit when c_emp%notfound;
+dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+end loop;
+if c_emp%isopen then
+dbms_output.put_line('closing cursor');
+close c_emp;
+end if;
+end;
+/
+
+op
+ename=KINGsal=5000
+ename=BLAKEsal=2850
+ename=CLARKsal=2450
+ename=JONESsal=2975
+ename=MARTINsal=1250
+ename=ALLENsal=1600
+ename=TURNERsal=1500
+ename=JAMESsal=950
+ename=WARDsal=1250
+ename=FORDsal=3000
+ename=SMITHsal=800
+ename=SCOTTsal=3000
+ename=ADAMSsal=1100
+ename=MILLERsal=1300
+closing cursor
+
+PL/SQL procedure successfully completed.
+---------------------------------------------------------------------------------
+ declare
+ cursor c_emp is select  * from emp;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp;
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+ end loop;
+ if c_emp%isopen then
+ dbms_output.put_line('closing cursor');
+ close c_emp;
+ end if;
+ open c_emp;
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+ end loop;
+ if c_emp%isopen then
+ dbms_output.put_line('closing cursor');
+ close c_emp;
+ end if;
+ end;
+ /
+
+op
+ename=KINGsal=5000rowcount=1
+ename=BLAKEsal=2850rowcount=2
+ename=CLARKsal=2450rowcount=3
+ename=JONESsal=2975rowcount=4
+ename=MARTINsal=1250rowcount=5
+ename=ALLENsal=1600rowcount=6
+ename=TURNERsal=1500rowcount=7
+ename=JAMESsal=950rowcount=8
+ename=WARDsal=1250rowcount=9
+ename=FORDsal=3000rowcount=10
+ename=SMITHsal=800rowcount=11
+ename=SCOTTsal=3000rowcount=12
+ename=ADAMSsal=1100rowcount=13
+ename=MILLERsal=1300rowcount=14
+closing cursor
+ename=KINGsal=5000rowcount=1
+ename=BLAKEsal=2850rowcount=2
+ename=CLARKsal=2450rowcount=3
+ename=JONESsal=2975rowcount=4
+ename=MARTINsal=1250rowcount=5
+ename=ALLENsal=1600rowcount=6
+ename=TURNERsal=1500rowcount=7
+ename=JAMESsal=950rowcount=8
+ename=WARDsal=1250rowcount=9
+ename=FORDsal=3000rowcount=10
+ename=SMITHsal=800rowcount=11
+ename=SCOTTsal=3000rowcount=12
+ename=ADAMSsal=1100rowcount=13
+ename=MILLERsal=1300rowcount=14
+closing cursor
+
+PL/SQL procedure successfully completed.
+----------------------------------------------------------------------------------------------------
+ CURSOR PARAMETER PASSING 
+ declare
+ cursor c_emp(p_deptno number) is select  * from emp where deptno=p_deptno;
+ v_emp c_emp%rowtype;
+ begin
+ open c_emp(10);
+ dbms_output.put_line('emp from deptno 10');
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+ end loop;
+ if c_emp%isopen then
+ dbms_output.put_line('closing cursor');
+ close c_emp;
+ end if;
+ open c_emp(20);
+ dbms_output.put_line('emp from deptno 20');
+ loop 
+ fetch c_emp into  v_emp;
+ exit when c_emp%notfound;
+ dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+ end loop;
+ if c_emp%isopen then
+ dbms_output.put_line('closing cursor');
+ close c_emp;
+ end if;
+ end;
+ /
+
+op 
+emp from deptno 10
+ename=KINGsal=5000rowcount=1
+ename=CLARKsal=2450rowcount=2
+ename=MILLERsal=1300rowcount=3
+closing cursor
+emp from deptno 20
+ename=JONESsal=2975rowcount=1
+ename=FORDsal=3000rowcount=2
+ename=SMITHsal=800rowcount=3
+ename=SCOTTsal=3000rowcount=4
+ename=ADAMSsal=1100rowcount=5
+closing cursor
+
+PL/SQL procedure successfully completed.
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+USING FOR LOOP IN CURSOR
+declare
+cursor c_emp(p_deptno number) is select  * from emp where deptno=p_deptno;
+begin
+dbms_output.put_line('emp from deptno 10');
+for v_emp in c_emp(10) 
+loop 
+dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+end loop;
+dbms_output.put_line('emp from deptno 20');
+for v_emp in c_emp(20) 
+loop 
+dbms_output.put_line('ename=' || v_emp.ename || 'sal=' ||v_emp.sal|| 'rowcount='|| c_emp%rowcount);
+end loop;
+end;
+/
+
+OUTPUT
+emp from deptno 10
+ename=KINGsal=5000rowcount=1
+ename=CLARKsal=2450rowcount=2
+ename=MILLERsal=1300rowcount=3
+emp from deptno 20
+ename=JONESsal=2975rowcount=1
+ename=FORDsal=3000rowcount=2
+ename=SMITHsal=800rowcount=3
+ename=SCOTTsal=3000rowcount=4
+ename=ADAMSsal=1100rowcount=5
+
+PL/SQL procedure successfully completed.
+----------------------------------------------------------------------------------------------------------------------------------------------
+cursor - memory which hold multiple rows
+*******************************************************************
+IMPLICIT and EXPLICIT CURSORS
+
+begin
+update emp set sal=sal+1000 where deptno=10; 
+if SQL%found then 
+dbms_output.put_line('record updated no of rows=' || SQL%rowcount);
+else
+dbms_output.put_line('record not updated');
+end if;
+end;
+/
+
+record updated no of rows=3
+
+PL/SQL procedure successfully completed.
+------------------------------------------------------------------------------------------------------------
+RECORD LOCKING
+
+declare
+cursor c_emp is select  * from emp for update ;
+begin
+for v_emp in c_emp 
+loop
+if v_emp.deptno=10 then
+update emp set sal=sal+sal*0.3 where current of c_emp;
+dbms_output.put_line(' for deptno 10 ename= ' ||v_emp.ename || ' sal= ' || v_emp.sal|| ' deptno = ' || v_emp.deptno );
+elsif v_emp.deptno=20 then
+update emp set sal=sal+sal*0.2 where current of c_emp;
+dbms_output.put_line(' for deptno 20 ename= ' ||v_emp.ename || ' sal= ' || v_emp.sal|| ' deptno = ' || v_emp.deptno );
+elsif v_emp.deptno=30 then
+update emp set sal=sal+sal*0.1 where current of c_emp;
+dbms_output.put_line(' for deptno 10 ename= ' ||v_emp.ename || ' sal= ' || v_emp.sal|| ' deptno = ' || v_emp.deptno );
+end if;
+end loop;
+end;
+/
+
+
+OUTPUT----
+for deptno 10 ename= KING sal= 10140 deptno = 10
+for deptno 10 ename= BLAKE sal= 3448.5 deptno = 30
+for deptno 10 ename= CLARK sal= 5830.5 deptno = 10
+for deptno 20 ename= JONES sal= 4284 deptno = 20
+for deptno 10 ename= MARTIN sal= 1512.5 deptno = 30
+for deptno 10 ename= ALLEN sal= 1936 deptno = 30
+for deptno 10 ename= TURNER sal= 1815 deptno = 30
+for deptno 10 ename= JAMES sal= 1149.5 deptno = 30
+for deptno 10 ename= WARD sal= 1512.5 deptno = 30
+for deptno 20 ename= FORD sal= 4320 deptno = 20
+for deptno 20 ename= SMITH sal= 1152 deptno = 20
+for deptno 20 ename= SCOTT sal= 4320 deptno = 20
+for deptno 20 ename= ADAMS sal= 1584 deptno = 20
+for deptno 10 ename= MILLER sal= 3887 deptno = 10
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT DEPTNO,SAL FROM EMP;
+
+    DEPTNO        SAL
+---------- ----------
+        10      13182
+        30    3793.35
+        10    7579.65
+        20     5140.8
+        30    1663.75
+        30     2129.6
+        30     1996.5
+        30    1264.45
+        30    1663.75
+        20       5184
+        20     1382.4
+
+    DEPTNO        SAL
+---------- ----------
+        20       5184
+        20     1900.8
+        10     5053.1
+
+14 rows selected.
+-------------------------------------------------------------------------------------------------------

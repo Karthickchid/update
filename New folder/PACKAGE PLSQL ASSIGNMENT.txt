@@ -1,0 +1,144 @@
+1)
+create or replace package MANAGE_EMP_PACK as
+procedure HIRE_EMP ( p_empno number, p_ename varchar2, p_job varchar2);
+procedure FIRE_EMP ( p_empno emp.empno%type, p_ename emp.ename%type, p_job emp.job%type);
+v_insert_cnt varchar2(250);
+v_delete_cnt varchar2(250);
+function VALIDATE_EMP (p_empno emp.empno%type)return boolean;
+end;
+/
+
+
+create or replace package body MANAGE_EMP_PACK as
+procedure HIRE_EMP ( p_empno emp.empno%type, p_ename emp.ename%type, p_job emp.job%type );
+
+
+
+
+*************************************************************
+2)
+create or replace package MY_EMP_PACK as
+function GET_AVG_SAL(p_ename varchar2) return number;
+function GET_AVG_SAL(p_empno number) return number;
+end;
+
+OUTPUT:
+Package created.
+---------------------------------------------------------------------------------------
+create or replace package body MY_EMP_PACK as
+function GET_AVG_SAL(p_ename varchar2) return number as
+v_avg number;
+v_dept number;
+begin
+select avg(sal),deptno into v_avg,v_dept from emp where deptno=v_dept;
+dbms_output.put_line(' average of sal = '||v_avg);
+return v_avg;
+exception 
+when no_data_found then
+dbms_output.put_line(' empno not available ');
+end;
+function GET_AVG_SAL(p_empno number ) return number as
+v_avg number;
+v_dept number;
+begin
+select avg(sal),deptno into v_avg,v_dept from emp where deptno=v_dept;
+dbms_output.put_line(' average of sal = '|| v_avg);
+return v_avg;
+exception 
+when no_data_found then
+dbms_output.put_line(' empno not available ');
+end;
+end;
+/
+
+OUTPUT:
+Package body created.
+
+---------------------------------------------------------------------------
+declare
+res number;
+begin
+res:= MY_EMP_PACK.GET_AVG_SAL('BLAKE');
+dbms_output.put_line(' salary of blake = ' || res);
+res:= MY_EMP_PACK.GET_AVG_SAL(7844);
+dbms_output.put_line(' salary of 7844 = ' || res);
+end;
+/
+
+OUTPUT:
+average of sal = 2850
+salary of blake = 2850
+average of sal = 1500
+salary of 7844 = 1500
+
+PL/SQL procedure successfully completed.
+
+*****************************************************************
+2)SQL> create or replace package MY_EMP_PACK as
+  2  function GET_AVG_SAL(p_ename varchar2) return number;
+  3  function GET_AVG_SAL(p_empno number) return number;
+  4  end;
+  5  /
+
+Package created.
+
+SQL> create or replace package body MY_EMP_PACK as
+  2  function GET_AVG_SAL(p_ename varchar2) return number as
+  3  v_avg number;
+  4  begin
+  5  select avg(sal) into v_avg from emp where ename=p_ename;
+  6  dbms_output.put_line(' average of sal = '||v_avg);
+  7  return v_avg;
+  8  exception 
+  9  when no_data_found then
+ 10  dbms_output.put_line(' empno not available ');
+ 11  end;
+ 12  
+ 13  function GET_AVG_SAL(p_empno number ) return number as
+ 14  v_avg number;
+ 15  begin
+ 16  select avg(sal) into v_avg from emp where empno=p_empno;
+ 17  dbms_output.put_line(' average of sal = '|| v_avg);
+ 18  return v_avg;
+ 19  exception 
+ 20  when no_data_found then
+ 21  dbms_output.put_line(' empno not available ');
+ 22  end;
+ 23  end;
+ 24  /
+
+Package body created.
+
+
+
+SQL> declare
+  2  res number;
+  3  begin
+  4  res:= MY_EMP_PACK.GET_AVG_SAL('BLAKE');
+  5  dbms_output.put_line(' salary of blake = ' || res);
+  6  res:= MY_EMP_PACK.GET_AVG_SAL(7844);
+  7  dbms_output.put_line(' salary of 7844 = ' || res);
+  8  end;
+  9  /
+average of sal = 2850
+salary of blake = 2850
+average of sal = 1500
+salary of 7844 = 1500
+
+PL/SQL procedure successfully completed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

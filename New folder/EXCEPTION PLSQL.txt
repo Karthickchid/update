@@ -1,0 +1,361 @@
+PREDEFINED EXCEPTIONS
+1)
+declare
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+exception
+when no_data_found then
+dbms_output.put_line(' empno is not available');
+end;
+/
+OUTPUT
+empno is not available
+
+PL/SQL procedure successfully completed.
+
+****************************************************************
+2)
+declare
+v_sal emp.sal%type;
+z number;
+begin
+z:=10/0;
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+exception
+when no_data_found then
+dbms_output.put_line(' empno is not available');
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+end;
+/
+OUTPUT
+dont try to divide by zero
+
+PL/SQL procedure successfully completed.
+*******************************************************************
+3)
+declare
+v_sal emp.sal%type;
+var number(3);
+z number;
+begin
+var:=10000;
+z:=10/0;
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+exception
+when no_data_found then
+dbms_output.put_line(' empno is not available');
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+
+OUTPUT:
+exception raised
+
+PL/SQL procedure successfully completed.
+**********************************************
+4) 
+declare
+ cursor c_emp is select  * from emp;
+ v_emp c_emp%rowtype;
+ begin
+ for v_counter in 1..10
+ loop 
+ fetch c_emp into  v_emp;
+ dbms_output.put_line(' ename = ' || v_emp.ename || ' sal = ' || v_emp.sal);
+exception 
+when invalid_cursor then
+dbms_output.put_line(' cursor is not opened or closed ')
+ end loop;
+ close c_emp;
+ end;
+ /
+
+
+**************************************************
+5) declare
+v_sal emp.sal%type;
+var number(3);
+z number;
+begin
+var:=10000;
+z:=10/0;
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+exception
+when no_data_found or value_error then
+dbms_output.put_line(' empno is not available or value error');
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+
+
+OUTPUT:
+empno is not available or value error
+
+PL/SQL procedure successfully completed.
+**************************************************
+ 6)
+begin
+declare
+v_sal emp.sal%type;
+var number(3);
+z number;
+begin
+select sal into z from emp;
+var:=10000;
+z:=10/0;
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+end;
+exception
+when no_data_found or value_error then
+dbms_output.put_line(' empno is not available or value error');
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+when too_many_rows then
+dbms_output.put_line(' multiple rows fetched');
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+
+OUTPUT
+multiple rows fetched
+
+PL/SQL procedure successfully completed.
+**************************************
+7)begin
+declare
+v_sal emp.sal%type;
+var number(3):=10000;
+z number;
+begin
+select sal into z from emp;
+z:=10/0;
+select sal into v_sal from emp where empno=1;
+dbms_output.put_line('sal=' || v_sal);
+end;
+exception
+when no_data_found or value_error then
+dbms_output.put_line(' empno is not available or value error');
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+when too_many_rows then
+dbms_output.put_line(' multiple rows fetched');
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+OUTPUT 
+empno is not available or value error
+
+PL/SQL procedure successfully completed.
+*************************************************
+8)
+declare
+var number(3);
+z number;
+begin
+begin
+var:=10000;
+dbms_output.put_line(' var= '|| var);
+exception
+when no_data_found or value_error then
+dbms_output.put_line(' empno is not available or value error');
+end;
+
+z:=10/0;
+dbms_output.put_line(' after z');
+exception
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+
+OUTPUT
+empno is not available or value error
+dont try to divide by zero
+
+PL/SQL procedure successfully completed.
+***********************************************************************
+9)
+declare
+var number(3);
+z number;
+begin
+begin
+var:=10000;
+dbms_output.put_line(' var= '|| var);
+exception
+when zero_divide then
+dbms_output.put_line(' empno is not available or value error');
+end;
+
+z:=10/0;
+dbms_output.put_line(' after z');
+exception
+when zero_divide then
+dbms_output.put_line(' dont try to divide by zero');
+
+when others then
+dbms_output.put_line(' exception raised');
+end;
+/
+
+exception raised
+PL/SQL procedure successfully completed.
+********************************************************************
+exception code with name
+10)
+
+A)SELECT * FROM EMP WHERE DEPTNO=10;
+
+OUTPUT
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM
+---------- ---------- --------- ---------- --------- ---------- ----------
+    DEPTNO
+----------
+      7839 KING       PRESIDENT            17-NOV-81       5000
+        10
+
+      7782 CLARK      MANAGER         7839 09-JUN-81       2450
+        10
+
+      7934 MILLER     CLERK           7782 23-JAN-82       1300
+        10
+
+B)begin
+delete dept where deptno=10;
+dbms_output.put_line('dept 10 is deleted');
+end;
+
+OUTPUT
+begin
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (P2007_18.EMP_FOREIGN_KEY) violated - child
+record found
+ORA-06512: at line 2
+
+C)declare
+childfound exception;
+pragma exception_init(childfound,-02292);
+begin
+delete dept where deptno=10;
+dbms_output.put_line('dept 10 is deleted');
+exception
+when childfound then
+dbms_output.put_line(' emp existing in dept 10');
+end;
+
+OUTPUT
+emp existing in dept 10
+
+PL/SQL procedure successfully completed.
+***********************************************************************************************
+USERDEFINED EXCEPTION
+
+declare
+marks number;
+wrong_marks exception;
+begin
+marks:=&marks;
+if marks>100 then
+raise wrong_marks;
+end if;
+dbms_output.put_line('ur marks =' || marks);
+exception
+when wrong_marks then 
+dbms_output.put_line(' please enter proper marks which is >=100');
+end;
+/
+
+OUTPUT:
+Enter value for marks: 200
+old   5: marks:=&marks;
+new   5: marks:=200;
+please enter proper marks which is >=100
+
+PL/SQL procedure successfully completed.
+ 
+OUTPUT:
+Enter value for marks: 19
+old   5: marks:=&marks;
+new   5: marks:=19;
+ur marks =19
+
+PL/SQL procedure successfully completed.
+
+******************************************************************************
+****enter employee id and amount if it matches the employee salary return salary else return exception****
+
+declare
+empid number :=&num;
+amt number := &amount;
+not_available exception;
+v_sal number;
+begin
+select sal into v_sal from emp where empno=empid;
+if amt>v_sal then
+raise not_available;
+end if;
+dbms_output.put_line('amount given is');
+exception
+when not_available then 
+dbms_output.put_line(' enter the amount less than or equal to sal');
+end;
+/
+
+OUTPUT:
+Enter value for num: 7844
+old   2: empid number :=&num;
+new   2: empid number :=7844;
+Enter value for amount: 2500
+old   3: amt number := &amount;
+new   3: amt number := 2500;
+enter the amount less than or equal to sal
+
+PL/SQL procedure successfully completed.
+*****************************************************************************************************
+TO DISPLAY ERROR CODE AND MESSAGE
+
+declare 
+var number(3);
+begin
+var:=10000;
+dbms_output.put_line(' var =' || var);
+exception
+when value_error then 
+dbms_output.put_line(' error code = '|| SQLCODE || '  message= ' || SQLERRM);
+end;
+/
+
+OUTPUT:
+error code = -6502  message= ORA-06502: PL/SQL: numeric or value error: number
+precision too large
+
+PL/SQL procedure successfully completed.
+************************************************************************************************
+
+
+
+
+
+
+
+
+

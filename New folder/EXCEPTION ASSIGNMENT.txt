@@ -1,0 +1,147 @@
+                                                                                           EXCEPTIONS ASSIGNMENT
+1)declare
+sal1 number :=&salary;
+v_ename varchar2(250);
+begin
+select ename into v_ename from emp where sal=sal1 ;
+dbms_output.put_line(' name= ' || v_ename);
+insert into messages values('name of employee is '|| v_ename);
+exception
+when too_many_rows then
+insert into messages values(' more than one employee with salary of '|| sal1);
+when no_data_found then
+insert into messages values(' No employee with salary of' || sal1);
+when others then
+insert into messages values(' some other error occured');
+end;
+/
+
+OUTPUT
+1)Enter value for salary: 1500
+old   2: sal1 number :=&salary;
+new   2: sal1 number :=1500;
+name= TURNER
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from messages;
+
+ERR_MESSAGE
+--------------------------------------------------------------------------------
+name of employee is TURNER
+
+2)Enter value for salary: 3000
+old   2: sal1 number :=&salary;
+new   2: sal1 number :=3000;
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT * FROM MESSAGES;
+
+ERR_MESSAGE
+--------------------------------------------------------------------------------
+ more than one employee with salary of 3000
+name of employee is TURNER
+
+3)Enter value for salary: 21563
+old   2: sal1 number :=&salary;
+new   2: sal1 number :=21563;
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT * from messages;
+
+ERR_MESSAGE
+--------------------------------------------------------------------------------
+ No employee with salary of21563
+ more than one employee with salary of 3000
+name of employee is TURNER
+*******************************************************************************************
+
+2) declare 
+    dept_no number :=&number;
+    dname varchar2(14):='&name';
+    dloc varchar2(13) := '&location';
+    duplicate_value exception;
+    pragma exception_init(duplicate_value, -00001);
+    begin
+    insert into dept values(dept_no,dname,dloc);
+    exception  
+    when duplicate_value then
+    dbms_output.put_line('dept id already exists ,enter some other value'); 
+    end;
+    /
+ 
+OUTPUT:
+Enter value for number: 50
+old   2:     dept_no number :=&number;
+new   2:     dept_no number :=50;
+Enter value for name: chidy
+old   3:     dname varchar2(14):='&name';
+new   3:     dname varchar2(14):='chidy';
+Enter value for location: chennai
+old   4:     dloc varchar2(13) := '&location';
+new   4:     dloc varchar2(13) := 'chennai';
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from dept;
+
+    DEPTNO DNAME          LOC
+---------- -------------- -------------
+        50 chidy          chennai
+        10 ACCOUNTING     NEW YORK
+        20 RESEARCH       DALLAS
+        30 SALES          CHICAGO
+        40 OPERATIONS     BOSTON
+****************************************************************************************
+3)declare
+v_name varchar2(10);
+duplicate_president exception;
+pragma exception_init(duplicate_president,-01422);
+begin
+select job into v_name from emp where job='CLERK';
+dbms_output.put_line('one president exists');
+exception
+when duplicate_president then
+dbms_output.put_line('more than one president');
+end;
+/
+
+OUTPUT:
+one president exists
+
+PL/SQL procedure successfully completed.
+
+3.2)declare
+v_name varchar2(10);
+duplicate_CLERK exception;
+pragma exception_init(duplicate_CLERK,-01422);
+begin
+select job into v_name from emp where job='CLERK';
+dbms_output.put_line('one CLERK exists');
+exception
+when duplicate_CLERK then
+dbms_output.put_line('more than one CLERK');
+end;
+/
+
+OUTPUT:
+more than one CLERK
+
+PL/SQL procedure successfully completed.
+
+
+***********************************************************************************
+4. declare
+   
+    
+
+
+
+
+
+
+
+
+

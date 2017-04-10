@@ -1,0 +1,167 @@
+1) 
+A)create or replace procedure USER_QUERY_EMP (p_empno number,p_sal out number,p_job out varchar2) as
+begin
+select sal,job into p_sal,p_job from emp where empno=p_empno;
+dbms_output.put_line(' sal = ' || p_sal || ' job = ' || p_job);
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+OUTPUT:
+Procedure created.
+
+B)declare
+var_sal emp.sal%type;
+var_job emp.job%type;
+begin
+USER_QUERY_EMP(7788, var_sal,var_job);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+dbms_output.put_line(' job from caller block = ' ||var_job);
+end;
+/
+
+OUTPUT:
+sal = 3000 job = ANALYST
+sal from caller block = 3000
+job from caller block = ANALYST
+
+PL/SQL procedure successfully completed.
+
+************************************************************
+
+2)
+create or replace function USER_ANNUAL_COMP (p_eno number, p_sal out number, p_comm out number) return number as
+compensation number;
+begin
+select sal,comm into p_sal,p_comm from emp where empno=p_eno;
+dbms_output.put_line(' sal = ' || p_sal || ' comm = ' || p_comm);
+select sal, comm ,(sal + NVL(comm,0))*12 into p_sal, p_comm, compensation from emp where empno=p_eno;
+dbms_output.put_line(' compensation = ' || compensation);
+return compensation;
+exception 
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+OUTPUT:
+Function created
+
+
+declare
+var_sal emp.sal%type; 
+var_comm emp.comm%type;
+annual number;
+begin
+annual:=USER_ANNUAL_COMP(7521, var_sal ,var_comm);
+dbms_output.put_line(' annual = ' || annual);
+end;
+/
+
+OUTPUT:
+sal = 1250 comm = 500
+compensation = 21000
+annual = 21000
+
+PL/SQL procedure successfully completed.
+
+********************************************************************************
+3)create or replace function user_valid_deptno(p_dno number) return boolean as
+dep_no number;
+ct number;
+begin
+select count(*) into ct from emp where deptno=p_dno;
+if ct>0 then
+dbms_output.put_line('dept exists');
+return true;
+else
+dbms_output.put_line('dept not exists');
+return false;
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('error');
+end;
+/
+
+
+
+create or replace procedure show_strength(p_deptno number) as
+ect number;
+begin
+if user_valid_deptno(p_deptno) then
+select count(*) into ect from emp where deptno=p_deptno;
+dbms_output.put_line(' enp no ' || ect);
+else
+dbms_output.put_line(' dept no not found ');
+end if;
+end;
+/
+  
+OUTPUT:
+
+Procedure created.
+
+begin
+show_strength(10);
+end;
+/
+dept exists
+enp no 3
+
+PL/SQL procedure successfully completed.
+
+begin
+show_strength(50);
+end;
+/
+dept not exists
+dept no not found
+
+PL/SQL procedure successfully completed.
+
+********************************************************************
+4)
+
+create or replace procedure SHOW_RECORDS(p_join_date date) as
+cursor c1 is select * from emp where hiredate>p_join_date;
+begin
+dbms_output.put_line(' Employees joined after ' || p_join_date);
+dbms_output.put_line(' ename ' || ' job ' || ' salary ' || 'department ');
+dbms_output.put_line('----------------------------------------------------------------');
+for v1 in c1
+loop
+dbms_output.put_line( v1.ename ||'  '|| v1.job ||'   '|| v1.sal || '  ' || v1.deptno);
+end loop;
+end;
+/
+
+OUTPUT:
+Procedure created.
+---------------------------------------------
+declare 
+join_date date :='&date';
+begin
+SHOW_RECORDS(join_date);
+end;
+/
+
+OUTPUT:
+Enter value for date: 17-DEC-81
+old   2: join_date date :='&date';
+new   2: join_date date :='17-DEC-81';
+Employees joined after 17-DEC-81
+ename  job  salary department
+----------------------------------------------------------------
+SCOTT  ANALYST   12000  20
+ADAMS  CLERK   1100  20
+MILLER  CLERK   1300  10
+
+PL/SQL procedure successfully completed.
+
+****************************************************************************
+5)
+create or replace procedure ADD_EMPLOYEE(job_id varchar2, manager_id number, hire_date date, salary number, commission number,department_id number)as  
+select dbms_random.random from dual;
+
+

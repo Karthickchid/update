@@ -1,0 +1,80 @@
+OBJECT RELATIONAL DATABASE SYSTEM: (ORDBMS)
+
+create or replace type emp_address as object
+(street varchar2(20), city varchar2(20), country varchar2(20));
+OUTPUT:
+Type created.
+
+create table person (pid number, pname varchar2(20),
+address emp_address);
+OUTPUT:
+Table created.
+
+insert into person values(1,'karthik' , emp_address('ayanavaram', 'chennai', 'India'));
+OUTPUT:
+1 row created.
+
+insert into person values(2,'vijay' , emp_address('avadi', 'chennai', 'India'));
+OUTPUT:
+1 row created.
+
+select * from person
+OUTPUT:
+       PID PNAME
+---------- --------------------
+ADDRESS(STREET, CITY, COUNTRY)
+--------------------------------------------------------------------------------
+         1 karthik
+EMP_ADDRESS('ayanavaram', 'chennai', 'India')
+
+         2 vijay
+EMP_ADDRESS('avadi', 'chennai', 'India')
+
+
+select p.address.city from person p where pid=2;
+OUTPUT:
+ADDRESS.CITY
+--------------------
+chennai
+******************************************************************
+
+update person set address=emp_address('annanagar','chennai city' ,'India')
+where pid=2;
+OUTPUT:
+1 row created.
+
+select p.address.city from person p where pid=2;
+OUTPUT:
+ADDRESS.CITY
+--------------------
+chennai city
+
+*****************************************************
+PLSQL QUERY
+
+declare 
+add emp_address;
+begin
+add:=emp_address(' aaa ', ' bbb ' ,' ccc ');
+update person set address = add where pid=1;
+end;
+/
+OUTPUT:
+PL/SQL procedure successfully completed.
+
+select p.address.city from person p where pid=1;
+OUTPUT:
+ADDRESS.CITY
+--------------------
+ bbb
+**************************************************************
+
+
+
+
+
+
+
+
+
+

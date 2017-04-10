@@ -1,0 +1,483 @@
+                                                   PROCEDURES AND FUNCTIONS
+
+ 1)create or replace procedure display_message as
+ begin
+ dbms_output.put_line('hello all');
+ end;
+/ 
+OUTPUT
+SQL> execute display_message
+hello all
+
+OUTPUT
+
+SQL> BEGIN
+  2  DISPLAY_MESSAGE;
+  3  END;
+  4  /
+hello all
+
+PL/SQL procedure successfully completed.
+*********************************************************
+2)
+create or replace procedure display_message as
+v_sal emp.sal%type;
+ begin
+select sal into v_sal from emp where empno=7369;
+ dbms_output.put_line(' sal = ' || v_sal);
+end;
+/
+
+OUTPUT:
+Procedure created.
+
+SQL> execute display_message;
+sal = 800
+
+PL/SQL procedure successfully completed.
+
+OUTPUT:
+SQL> begin
+  2  display_message;
+  3  end;
+  4  /
+sal = 800
+
+PL/SQL procedure successfully completed.
+*********************************************************
+EXCEPTION IN Procedure
+3).A) create or replace procedure display_message as
+v_sal emp.sal%type;
+ begin
+select sal into v_sal from emp where empno=7;
+ dbms_output.put_line(' sal = ' || v_sal);
+end;
+
+OUTPUT:
+SQL> execute display_message;
+BEGIN display_message; END;
+
+*
+ERROR at line 1:
+ORA-01403: no data found
+ORA-06512: at "P2007_18.DISPLAY_MESSAGE", line 4
+ORA-06512: at line 1
+
+B)create or replace procedure display_message as
+v_sal emp.sal%type;
+ begin
+select sal into v_sal from emp where empno=7;
+ dbms_output.put_line(' sal = ' || v_sal);
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+Procedure created.
+
+SQL> execute display_message;
+empno not available
+
+PL/SQL procedure successfully completed.
+**********************************************************
+IF CONDITION 
+
+4) create or replace procedure display_message as
+v_sal emp.sal%type;
+ begin
+select sal into v_sal from emp where empno=7839;
+ dbms_output.put_line(' sal = ' || v_sal);
+if v_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+
+Procedure created.
+
+SQL> execute display_message
+sal = 5000
+less than 20000
+
+PL/SQL procedure successfully completed.
+
+**********************************************************
+PARAMETER IN PROCEDURE 
+READ ONLY (IN) DEFAULT
+5)
+create or replace procedure get_sal_info (p_empno number) as
+v_sal emp.sal%type;
+ begin
+select sal into v_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || v_sal);
+if v_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+SQL> execute get_sal_info(7844);
+sal = 1500
+less than 20000
+
+PL/SQL procedure successfully completed.
+OUTPUT:
+SQL> execute get_sal_info(7788);
+sal = 3000
+less than 20000
+
+PL/SQL procedure successfully completed.
+
+OUTPUT:
+SQL> begin
+  2  get_sal_info(7876);
+  3  end;
+  4  /
+sal = 1100
+less than 20000
+
+PL/SQL procedure successfully completed.
+
+OUTPUT:
+ SQL> declare
+  2   v_empno emp.empno%type:=7499;
+  3   begin
+  4   get_sal_info(v_empno);
+  5   end;
+  6   /
+sal = 1600
+less than 20000
+
+PL/SQL procedure successfully completed.
+
+**********************************************************
+
+6)
+create or replace procedure get_emp_info (p_deptno number) as
+cursor c_emp(p_dept number) is select  * from emp where  deptno=p_dept;
+begin
+dbms_output.put_line('emp from deptno ');
+for v_emp in c_emp(p_deptno) 
+loop 
+dbms_output.put_line('ename=' || v_emp.ename || 'sal=' || v_emp.sal);
+end loop;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+OUTPUT:
+Procedure created.
+
+SQL> execute get_emp_info(10);
+emp from deptno
+ename=KINGsal=5000
+ename=CLARKsal=2450
+ename=MILLERsal=1300
+
+PL/SQL procedure successfully completed.
+****************************************************************
+WRITE ONLY (OUT):
+7).
+create or replace procedure get_sal_info (p_empno number,p_sal out number) as
+begin
+select sal into p_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || p_sal);
+if p_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+Procedure created.
+
+declare
+var_sal emp.sal%type;
+begin
+get_sal_info(7788, var_sal);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+end;
+/
+ 
+OUTPUT:
+sal = 3000
+less than 20000
+sal from caller block = 3000
+
+PL/SQL procedure successfully completed.
+******************************************************
+IN - DEFAULT ,no need to mention parameter as in, read only, reads variable value expressions.
+OUT- mention out along with parameter, write only, writes only variable
+IN OUT - mention in out along with parameter, read and write, writes only variable
+8).
+A)create or replace procedure get_sal_info (p_empno number,p_sal in out number) as
+begin
+dbms_output.put_line(' sal in procedure before modification = ' || p_sal);
+select sal into p_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || p_sal);
+if p_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+OUTPUT:
+Procedure created.
+
+
+declare
+var_sal emp.sal%type := 1000;
+begin
+get_sal_info(7788, var_sal);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+end;
+/
+
+OUTPUT:
+sal in procedure before modification = 1000
+sal = 3000
+less than 20000
+sal from caller block = 3000
+
+PL/SQL procedure successfully completed.
+
+B)create or replace procedure get_sal_info (p_empno number,p_sal out number) as
+begin
+dbms_output.put_line(' sal in procedure before modification = ' || p_sal);
+select sal into p_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || p_sal);
+if p_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+Procedure created.
+
+declare
+var_sal emp.sal%type := 1000;
+begin
+get_sal_info(7788, var_sal);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+end;
+/
+
+OUTPUT:
+sal in procedure before modification =
+sal = 3000
+less than 20000
+sal from caller block = 3000
+
+PL/SQL procedure successfully completed.
+*****************************************************************
+FUNCTIONS - RETURNS A VALUE,
+PROCEDURE - DOESNT RETURN , TO RETURN USING OUT
+
+1) create or replace function get_sal (p_empno number) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || v_sal);
+if v_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+Function created.
+
+declare
+var_sal emp.sal%type;
+begin
+var_sal:=get_sal (7788);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+end;
+/
+
+OUTPUT:
+sal = 3000
+less than 20000
+sal from caller block = 3000
+
+PL/SQL procedure successfully completed.
+*************************************************************
+select query can be used in functions not in procedures
+*************************************************************
+FUNCTION INTO PROCEDURE
+
+create or replace function get_sal (p_empno number) return number as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+ dbms_output.put_line(' sal = ' || v_sal);
+if v_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+else
+dbms_output.put_line(' less than 20000');
+end if;
+return v_sal;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+OUTPUT:
+Function created.
+
+declare
+var_sal emp.sal%type;
+begin
+var_sal:=get_sal (7788);
+dbms_output.put_line(' sal from caller block = ' ||var_sal);
+end;
+/
+
+OUTPUT:
+sal = 7000
+less than 20000
+sal from caller block = 7000
+
+PL/SQL procedure successfully completed.
+
+------------------------------------------------------------
+select get_sal(7788) from dual;
+
+ OUTPUT:
+GET_SAL(7788)
+-------------
+         7000
+
+sal = 7000
+less than 20000
+--------------------------------------------------------------
+create or replace procedure sal_dis( p_empno emp.empno%type) as
+v_sal emp.sal%type;
+begin
+v_sal:=get_sal(p_empno);
+if v_sal>10000 then 
+update emp set sal=sal+1000 where empno=p_empno;
+else
+update emp set sal=sal+2000 where empno=p_empno;
+end if;
+end;
+/
+---------------------------------------
+OR(Calling Function In IF statement)
+
+create or replace procedure sal_dis( p_empno emp.empno%type) as
+begin
+if get_sal(p_empno)>10000 then 
+update emp set sal=sal+1000 where empno=p_empno;
+else
+update emp set sal=sal+2000 where empno=p_empno;
+end if;
+end;
+/
+
+OUTPUT:
+
+Procedure created.
+
+ --->
+execute sal_dis(7788);
+OUTPUT:
+sal = 7000
+less than 20000
+
+PL/SQL procedure successfully completed.
+
+---->
+execute sal_dis(7788);
+OUTPUT:
+sal = 9000
+less than 20000
+
+PL/SQL procedure successfully completed.
+*************************************************************
+FUNCTION RETURN BOOLEAN VALUE
+CAN BE CALLED INSIDE IF
+
+create or replace function get_sal (p_empno number) return boolean as
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where empno=p_empno;
+dbms_output.put_line(' sal = ' || v_sal);
+if v_sal>20000 then
+dbms_output.put_line(' greater than 20000');
+return true;
+else
+dbms_output.put_line(' less than 20000');
+return false;
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('empno not available');
+end;
+/
+
+OUTPUT:
+Function created.
+
+ANONYMOUS BLOCK
+
+begin
+if get_sal(7788) then 
+dbms_output.put_line('from caller greater than 20000');
+else
+dbms_output.put_line('from caller less than 20000');
+end if;
+end;    
+/
+OUTPUT:
+sal = 12000
+less than 20000
+from caller less than 20000
+
+PL/SQL procedure successfully completed.
+
+********************************************************************
+
+
+
+
+
+
+

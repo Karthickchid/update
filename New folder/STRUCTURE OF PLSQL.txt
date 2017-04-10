@@ -1,0 +1,213 @@
+1) set serveroutput on
+declare
+  2  i number:=&num1;
+  3  j number:=&num2;
+  4  addition number;
+  5  begin
+  6  addition:=i+j;
+  7  dbms_output.put_line('addition of number is' ||addition);
+  8  end;
+  9  /
+Enter value for num1: 25
+old   2: i number:=&num1;
+new   2: i number:=25;
+Enter value for num2: 25
+old   3: j number:=&num2;
+new   3: j number:=25;
+addition of number is50
+
+PL/SQL procedure successfully completed.
+-----------------------------------------------------------------------------
+
+2)set serveroutput on
+ declare
+  2  v_name varchar2(20);
+  3  v_sal number;
+  4  v_empid number:=&eno;
+  5  begin
+  6  select last_name,salary into v_name,v_sal from employees
+  7  where employee_id=v_empid;
+  8  dbms_output.put_line('name='||v_name);
+  9  dbms_output.put_line('salary='||v_sal);
+ 10  end;
+ 11  /
+Enter value for eno: 100
+old   4: v_empid number:=&eno;
+new   4: v_empid number:=100;
+name=King
+salary=24000
+-----------------------------------------------------------------------
+3)declare
+  2  Rec_emp employees%rowtype;
+  3  v_empid number:=&eno;
+  4  begin
+  5  select * into rec_emp from employees
+  6  where employee_id=v_empid;
+  7  dbms_output.put_line('name= '||Rec_emp.last_name);
+  8  dbms_output.put_line('salary= '||Rec_emp.salary);
+  9  end;
+ 10  /
+Enter value for eno: 101
+old   3: v_empid number:=&eno;
+new   3: v_empid number:=101;
+name= Kochhar
+salary= 17000
+
+PL/SQL procedure successfully completed.
+
+--------------------------------------------------------------------
+
+4) variablename tablename.column%type
+declare
+  2  v_name employees.last_name%type;
+  3  v_sal employees.salary%type;
+  4  v_empid number:=&eno;
+  5  begin
+  6  select last_name,salary into v_name,v_sal from employees
+  7  where employee_id=v_empid;
+  8  dbms_output.put_line('name= '||v_name);
+  9  dbms_output.put_line('salary= '||v_sal);
+ 10  end;
+ 11  /
+Enter value for eno: 100
+old   4: v_empid number:=&eno;
+new   4: v_empid number:=100;
+name= King
+salary= 24000
+
+PL/SQL procedure successfully completed.
+----------------------------------------------------------------------
+5) if condition
+ declare
+  2  a number:=&num1;
+  3  begin
+  4  if (mod(a,2)=0) then
+  5  dbms_output.put_line(a||' is even number');
+  6  else
+  7  dbms_output.put_line(a||' is odd number');
+  8  end if;
+  9  end;
+ 10  /
+Enter value for num1: 25
+old   2: a number:=&num1;
+new   2: a number:=25;
+25 is odd number
+
+PL/SQL procedure successfully completed.
+
+SQL> r
+  1  declare
+  2  a number:=&num1;
+  3  begin
+  4  if (mod(a,2)=0) then
+  5  dbms_output.put_line(a||' is even number');
+  6  else
+  7  dbms_output.put_line(a||' is odd number');
+  8  end if;
+  9* end;
+Enter value for num1: 22
+old   2: a number:=&num1;
+new   2: a number:=22;
+22 is even number
+
+PL/SQL procedure successfully completed.
+
+--------------------------------------------------------------------------
+6)
+set verify off
+declare
+a number :=&num1;
+b number :=&num2;
+c number :=&num3;
+begin
+if (a>b and a>c) then
+        dbms_output.put_line(a||' is max number');
+else if (b>c) then 
+         dbms_output.put_line(b||' is max number');
+else
+         dbms_output.put_line(c||' is max number');
+end if;
+end;
+/
+--------------------------------------------------------------------------------
+
+7)SQL> declare
+  2  i number:=1;
+  3  begin
+  4  loop
+  5  exit when (i>9);
+  6  dbms_output.put_line(
+  7  i:=i+1;
+  8  end loop;
+  9  end;
+ 10  /
+ op----123456789
+
+-------------------------------------------------------------------	
+8) while loop
+1 declare
+  2  i number:=1;
+  3  begin
+  4  while(i<=5)
+  5  loop
+  6  dbms_output.put_line(i);
+  7  i:=i+1;
+  8  end loop;
+  9  end;
+ 10   /
+ op---12345
+------------------------------------------------------------------
+9) for loop
+ begin
+   for i in 1..6
+   loop
+   dbms_output.put_line(i);
+   end loop;
+   end;
+   /
+ op--123456
+
+PL/SQL procedure successfully completed.
+-------------------------------------------------------------------
+10) begin
+  2     for i in reverse 1..6
+  3     loop
+  4     dbms_output.put_line(i);
+  5     end loop;
+  6     end;
+  7     /
+op--- 654321
+
+PL/SQL procedure successfully completed.
+
+----------------------------------------------------------------------
+11)SQL> variable maxsal number
+SQL> print maxsal
+
+    MAXSAL
+----------
+
+
+SQL> begin
+  2  select max(salary) into :maxsal from employees;
+  3  dbms_output.put_line('max salary is= '||:maxsal);
+  4  end;
+  5  /
+max salary is= 24000
+
+PL/SQL procedure successfully completed.
+
+SQL> variable maxsal number
+SQL> print maxsal
+
+    MAXSAL
+----------
+   24000
+------------------------------------------------------------------------------------
+
+12) nesting
+
+<<outer>>
+declare
+str
+----------------------------------------------------------------------------------------
